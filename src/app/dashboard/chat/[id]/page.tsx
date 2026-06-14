@@ -6,18 +6,14 @@ import {
   Send, 
   Mic, 
   Paperclip, 
-  FileText, 
-  Image as ImageIcon, 
-  Video, 
   BookOpen,
-  History,
-  Info,
-  ExternalLink,
   Loader2,
   BrainCircuit,
   FolderOpen,
   MessageSquare,
-  Phone
+  Phone,
+  FileDown,
+  AlertTriangle
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -28,6 +24,8 @@ import { storage, type ChatSession, type ChatMessage } from '@/lib/storage';
 import { unifiedMedicalChat } from '@/ai/flows/unified-medical-chat-flow';
 import { translations } from '@/lib/translations';
 import { LiveAudioSession } from '@/components/chat/live-audio-session';
+import { detectRedFlags } from '@/lib/red-flag-detector';
+import { RedFlagAlert } from '@/components/clinical/red-flag-alert';
 
 export default function ChatWorkspace() {
   const { id } = useParams();
@@ -37,6 +35,7 @@ export default function ChatWorkspace() {
   const [isListening, setIsListening] = React.useState(false);
   const [showAudioMode, setShowAudioMode] = React.useState(false);
   const [lang, setLang] = React.useState<'en' | 'ar'>('en');
+  const [activeRedFlag, setActiveRedFlag] = React.useState<{title: string, protocol: string[], flag: string} | null>(null);
   const scrollRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
@@ -71,6 +70,11 @@ export default function ChatWorkspace() {
       const transcript = event.results[0][0].transcript;
       setInput(prev => prev + ' ' + transcript);
       setIsListening(false);
+      // Real-time red flag check for voice input
+      const flag = detectRedFlags(transcript);
+      if (flag) {
+        setActiveRedFlag({ title: flag.title, protocol: flag.protocol, flag: transcript });
+      }
     };
 
     recognition.onerror = () => setIsListening(false);
@@ -79,6 +83,12 @@ export default function ChatWorkspace() {
   const handleSend = async (messageText?: string) => {
     const text = messageText || input;
     if (!text.trim() || !chat) return;
+
+    // Check for red flags before sending
+    const flag = detectRedFlags(text);
+    if (flag) {
+      setActiveRedFlag({ title: flag.title, protocol: flag.protocol, flag: text });
+    }
 
     const userMsg: ChatMessage = {
       id: Date.now().toString(),
@@ -135,12 +145,50 @@ export default function ChatWorkspace() {
     }
   };
 
+  const handleGenerateReport = () => {
+    if (!chat) return;
+    const reportText = `
+NEUROCORTEX PRO - CLINICAL HANDOVER REPORT
+==========================================
+Date: ${new Date().toLocaleString()}
+Case: ${chat.title}
+Type: ${chat.type.toUpperCase()}
+
+CASE HISTORY SUMMARY:
+${chat.messages.filter(m => m.role === 'user').map(m => `- ${m.content}`).slice(-5).join('\n')}
+
+AI RECENT RECOMMENDATIONS:
+${chat.messages.filter(m => m.role === 'assistant').map(m => `- ${m.content}`).slice(-3).join('\n')}
+
+STABILIZATION PROTOCOLS (IF APPLICABLE):
+- Maintain ICP < 20 mmHg
+- Systolic BP Target: 120-140 mmHg
+- Serial Pupil Checks q1h
+    `.trim();
+
+    const blob = new Blob([reportText], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `handover_report_${chat.id}.txt`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
   if (!chat) return <div className="p-8">Session not found.</div>;
 
   const isCase = chat.type === 'case';
 
   return (
     <div className="flex flex-col h-[calc(100vh-10rem)] max-w-6xl mx-auto gap-4 relative">
+      {activeRedFlag && (
+        <RedFlagAlert 
+          flag={activeRedFlag.flag}
+          protocol={activeRedFlag.protocol}
+          onClose={() => setActiveRedFlag(null)}
+        />
+      )}
+
       <div className="flex items-center justify-between px-2">
         <div className="flex items-center gap-3">
           <div className={`p-2 rounded-xl bg-card border border-border/50 shadow-sm ${isCase ? 'text-accent' : 'text-primary'}`}>
@@ -159,14 +207,26 @@ export default function ChatWorkspace() {
           </div>
         </div>
         
-        <Button 
-          variant="outline" 
-          className="gap-2 border-accent text-accent hover:bg-accent/10"
-          onClick={() => setShowAudioMode(true)}
-        >
-          <Phone className="w-4 h-4" />
-          {t.liveAudio}
-        </Button>
+        <div className="flex gap-2">
+          {isCase && (
+            <Button 
+              variant="outline" 
+              className="gap-2 border-primary text-primary hover:bg-primary/10"
+              onClick={handleGenerateReport}
+            >
+              <FileDown className="w-4 h-4" />
+              {t.generateReport}
+            </Button>
+          )}
+          <Button 
+            variant="outline" 
+            className="gap-2 border-accent text-accent hover:bg-accent/10"
+            onClick={() => setShowAudioMode(true)}
+          >
+            <Phone className="w-4 h-4" />
+            {t.liveAudio}
+          </Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 flex-1 min-h-0">
@@ -252,6 +312,12 @@ export default function ChatWorkspace() {
                <p className="text-[11px] italic text-muted-foreground leading-relaxed">
                   Persistent clinical memory is active. AI will cross-reference historical patterns.
                </p>
+               <div className="p-3 bg-red-500/10 rounded-lg border border-red-500/20">
+                  <p className="text-[9px] font-bold text-red-500 uppercase flex items-center gap-1">
+                    <AlertTriangle className="w-3 h-3" /> Red Flag Monitoring
+                  </p>
+                  <p className="text-[9px] text-muted-foreground mt-1">Real-time pattern recognition enabled for stabilization triggers.</p>
+               </div>
             </CardContent>
           </Card>
         </div>

@@ -10,6 +10,7 @@ export const translations = {
     outcomes: "Outcomes",
     pharmacology: "Pharmacology",
     treatmentPlanner: "Treatment Planner",
+    monitoringHub: "Post-Op Monitoring",
     settings: "System Configuration",
     startCase: "Start Patient Case",
     quickQA: "Quick Q&A",
@@ -28,6 +29,8 @@ export const translations = {
     pharmacologyDesc: "Critical care medication database and dosing guides.",
     plannerTitle: "Therapeutic Planner",
     plannerDesc: "Generate evidence-based neurosurgical treatment protocols.",
+    monitoringTitle: "Post-Op Monitoring Hub",
+    monitoringDesc: "Dynamic neurological checklists and titration logs.",
     dosage: "Dosage",
     indication: "Indication",
     interactions: "Interactions",
@@ -49,7 +52,10 @@ export const translations = {
     male: "Male",
     female: "Female",
     other: "Other",
-    generatePlan: "Synthesize Management Framework"
+    generatePlan: "Synthesize Management Framework",
+    generateReport: "Generate Handover Report",
+    redFlagWarning: "CRITICAL: Red Flag Detected",
+    stabilizationProtocol: "Stabilization Protocol",
   },
   ar: {
     title: "نيوروكورتكس برو",
@@ -60,6 +66,7 @@ export const translations = {
     outcomes: "النتائج والمقاييس",
     pharmacology: "قسم الأدوية",
     treatmentPlanner: "مخطط العلاج",
+    monitoringHub: "مراقبة ما بعد الجراحة",
     settings: "إعدادات النظام",
     startCase: "بدء حالة جديدة",
     quickQA: "سؤال وجواب سريع",
@@ -78,6 +85,8 @@ export const translations = {
     pharmacologyDesc: "قاعدة بيانات أدوية العناية المركزة وأدلة الجرعات.",
     plannerTitle: "المخطط العلاجي",
     plannerDesc: "توليد بروتوكولات علاجية قائمة على الأدلة.",
+    monitoringTitle: "مركز مراقبة ما بعد الجراحة",
+    monitoringDesc: "قوائم مرجعية عصبية ديناميكية وسجلات المعايرة.",
     dosage: "الجرعة",
     indication: "دواعي الاستعمال",
     interactions: "التفاعلات",
@@ -99,7 +108,10 @@ export const translations = {
     male: "ذكر",
     female: "أنثى",
     other: "آخر",
-    generatePlan: "توليد إطار التدبير"
+    generatePlan: "توليد إطار التدبير",
+    generateReport: "توليد تقرير التسليم",
+    redFlagWarning: "تحذير: تم اكتشاف علامة خطر",
+    stabilizationProtocol: "بروتوكول التثبيت السريري",
   }
 };
 

@@ -11,22 +11,16 @@ import {
   Plus,
   MessageSquare,
   Trash2,
-  MoreVertical,
   FolderOpen,
   X,
   Pill,
-  ClipboardList
+  ClipboardList,
+  Stethoscope
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { storage, type ChatSession } from "@/lib/storage"
 import { Button } from "@/components/ui/button"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import { cn } from "@/lib/utils"
 import { translations } from "@/lib/translations"
 
@@ -46,7 +40,7 @@ export function AppSidebar({ isOpen, onClose }: AppSidebarProps) {
     setLang(storage.getProfile().preferences.language)
   }, [pathname])
 
-  const t = translations[lang]
+  const t = translations[lang];
 
   const createNewChat = (type: 'case' | 'general') => {
     const newChat: ChatSession = {
@@ -78,13 +72,14 @@ export function AppSidebar({ isOpen, onClose }: AppSidebarProps) {
     { title: t.imagingWorkspace, icon: ImageIcon, url: "/dashboard/imaging", color: "from-blue-500/20 to-indigo-500/20" },
     { title: t.pharmacology, icon: Pill, url: "/dashboard/pharmacology", color: "from-emerald-500/20 to-teal-500/20" },
     { title: t.treatmentPlanner, icon: ClipboardList, url: "/dashboard/planner", color: "from-orange-500/20 to-red-500/20" },
+    { title: t.monitoringHub, icon: Stethoscope, url: "/dashboard/monitoring", color: "from-red-500/20 to-orange-500/20" },
     { title: t.clinicalLog, icon: Database, url: "/dashboard/cases", color: "from-indigo-500/20 to-purple-500/20" },
     { title: t.outcomes, icon: Activity, url: "/dashboard/outcomes", color: "from-purple-500/20 to-pink-500/20" },
   ]
 
   return (
     <>
-      {/* Mobile Backdrop - CRITICAL: High z-index and explicit closing */}
+      {/* Mobile Backdrop */}
       {isOpen && (
         <div 
           className="fixed inset-0 z-[49] bg-black/80 backdrop-blur-md lg:hidden transition-opacity duration-300"
@@ -92,7 +87,7 @@ export function AppSidebar({ isOpen, onClose }: AppSidebarProps) {
         />
       )}
 
-      {/* Sidebar - CRITICAL: High z-index and structured transition */}
+      {/* Sidebar */}
       <aside 
         className={cn(
           "fixed inset-y-0 z-50 w-72 bg-sidebar border-r border-sidebar-border/50 transition-all duration-300 ease-in-out transform flex flex-col shadow-2xl overflow-hidden",
