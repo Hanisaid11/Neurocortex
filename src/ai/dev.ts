@@ -1,1 +1,7 @@
-// Flows will be imported for their side effects in this file.
+import { config } from 'dotenv';
+config();
+
+import '@/ai/flows/medical-quiz-and-flashcard-generation.ts';
+import '@/ai/flows/or-voice-assistant-medical-query.ts';
+import '@/ai/flows/medical-image-anomaly-detection.ts';
+import '@/ai/flows/smart-medical-literature-search.ts';
