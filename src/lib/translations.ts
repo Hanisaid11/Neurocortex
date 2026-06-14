@@ -36,7 +36,20 @@ export const translations = {
     activeTheme: "Active Theme",
     clinicalMemory: "Clinical Memory Hub",
     deleteCase: "Delete Case",
-    deleteChat: "Delete Chat"
+    deleteChat: "Delete Chat",
+    backupTitle: "Data Resilience & Cloud Sync",
+    backupDesc: "Secure your clinical data across devices.",
+    exportData: "Download Local Backup",
+    syncCloud: "Sync with Google Drive",
+    importData: "Restore from Backup",
+    clinicalHistory: "Clinical History (Simulator)",
+    complaints: "Subjective Complaints",
+    age: "Patient Age",
+    sex: "Biological Sex",
+    male: "Male",
+    female: "Female",
+    other: "Other",
+    generatePlan: "Synthesize Management Framework"
   },
   ar: {
     title: "نيوروكورتكس برو",
@@ -73,7 +86,20 @@ export const translations = {
     activeTheme: "المظهر النشط",
     clinicalMemory: "مركز الذاكرة السريرية",
     deleteCase: "حذف الحالة",
-    deleteChat: "حذف الدردشة"
+    deleteChat: "حذف الدردشة",
+    backupTitle: "مرونة البيانات والمزامنة السحابية",
+    backupDesc: "قم بتأمين بياناتك السريرية عبر الأجهزة.",
+    exportData: "تحميل نسخة احتياطية محلية",
+    syncCloud: "مزامنة مع جوجل درايف",
+    importData: "استعادة من النسخة الاحتياطية",
+    clinicalHistory: "القصة المرضية (محاكي)",
+    complaints: "الشكوى الحالية",
+    age: "العمر",
+    sex: "الجنس البيولوجي",
+    male: "ذكر",
+    female: "أنثى",
+    other: "آخر",
+    generatePlan: "توليد إطار التدبير"
   }
 };
 

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Shield, Brain, Cpu, Key, Globe, Layout, Palette, Save, Trash2 } from "lucide-react"
+import { Shield, Brain, Cpu, Key, Globe, Layout, Palette, Save, Trash2, Download, Cloud, RefreshCw, Smartphone } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -14,6 +14,7 @@ import { translations } from "@/lib/translations"
 export default function SettingsPage() {
   const { toast } = useToast()
   const [profile, setProfile] = useState<UserProfile | null>(null)
+  const [syncing, setSyncing] = useState(false)
 
   useEffect(() => {
     setProfile(storage.getProfile())
@@ -32,20 +33,29 @@ export default function SettingsPage() {
         description: profile.preferences.language === 'ar' ? "تم تحديث تكوين النظام بنجاح." : "Global system configuration updated successfully.",
       })
       
-      // Refresh to apply language change across all components
       window.location.reload();
     }
+  }
+
+  const handleSync = async () => {
+    setSyncing(true)
+    await storage.syncWithGoogleDrive()
+    setSyncing(false)
+    toast({
+      title: "Cloud Sync Successful",
+      description: "Application state is now mirrored to your Google Drive.",
+    })
   }
 
   if (!profile) return null;
   const t = translations[profile.preferences.language];
 
   return (
-    <div className="max-w-3xl mx-auto space-y-8 py-4">
+    <div className="max-w-4xl mx-auto space-y-8 py-4">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-headline font-bold">{t.settings}</h1>
-          <p className="text-muted-foreground">Manage multi-lingual support, themes, and AI orchestrators.</p>
+          <p className="text-muted-foreground">Manage multi-lingual support, themes, and automated clinical backups.</p>
         </div>
         <Button onClick={handleSave} className="gap-2 h-11 px-8">
           <Save className="w-4 h-4" />
@@ -101,6 +111,46 @@ export default function SettingsPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* NEW: Resilience & Cloud Sync Section */}
+      <Card className="bg-card/50 border-border/50 border-dashed border-primary/30">
+        <CardHeader>
+          <div className="flex items-center gap-2">
+            <Shield className="w-5 h-5 text-primary" />
+            <CardTitle className="font-headline">{t.backupTitle}</CardTitle>
+          </div>
+          <CardDescription>{t.backupDesc}</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Button variant="secondary" className="h-16 gap-3 justify-start" onClick={() => storage.exportBackup()}>
+                <Download className="w-5 h-5 text-primary" />
+                <div className="text-left">
+                  <p className="text-sm font-bold uppercase">{t.exportData}</p>
+                  <p className="text-[10px] text-muted-foreground">JSON Encrypted Archive</p>
+                </div>
+              </Button>
+              <Button variant="secondary" className="h-16 gap-3 justify-start relative" onClick={handleSync} disabled={syncing}>
+                <Cloud className="w-5 h-5 text-accent" />
+                <div className="text-left">
+                  <p className="text-sm font-bold uppercase">{t.syncCloud}</p>
+                  <p className="text-[10px] text-muted-foreground">Persistent Multi-Device Sync</p>
+                </div>
+                {syncing && <RefreshCw className="w-4 h-4 animate-spin absolute right-4" />}
+              </Button>
+           </div>
+           
+           <div className="p-4 rounded-xl bg-primary/5 border border-primary/10 flex items-start gap-3">
+              <Smartphone className="w-5 h-5 text-primary mt-1" />
+              <div>
+                <p className="text-xs font-bold uppercase mb-1">Automated Device Memory Backup</p>
+                <p className="text-[11px] leading-relaxed text-muted-foreground">
+                  NeuroCortex Pro is currently configured to mirror every state change to a secondary persistent cache layer within this browser session. This ensures resilience even if volatile storage is cleared.
+                </p>
+              </div>
+           </div>
+        </CardContent>
+      </Card>
 
       <Card className="bg-card/50 border-border/50">
         <CardHeader>

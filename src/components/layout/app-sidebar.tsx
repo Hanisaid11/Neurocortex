@@ -84,21 +84,24 @@ export function AppSidebar({ isOpen, onClose }: AppSidebarProps) {
 
   return (
     <>
+      {/* Mobile Backdrop - CRITICAL: High z-index and explicit closing */}
       {isOpen && (
         <div 
-          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden transition-opacity duration-300"
+          className="fixed inset-0 z-[49] bg-black/80 backdrop-blur-md lg:hidden transition-opacity duration-300"
           onClick={onClose}
         />
       )}
 
+      {/* Sidebar - CRITICAL: High z-index and structured transition */}
       <aside 
         className={cn(
-          "fixed inset-y-0 left-0 z-50 w-64 bg-sidebar/95 backdrop-blur-md border-r border-sidebar-border/50 transition-transform duration-300 ease-in-out transform flex flex-col",
+          "fixed inset-y-0 z-50 w-72 bg-sidebar border-r border-sidebar-border/50 transition-all duration-300 ease-in-out transform flex flex-col shadow-2xl overflow-hidden",
           isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
-          lang === 'ar' ? "right-0 left-auto border-l border-r-0" : "left-0"
+          lang === 'ar' ? "right-0 left-auto border-l border-r-0 translate-x-full" : "left-0",
+          lang === 'ar' && isOpen ? "translate-x-0" : ""
         )}
       >
-        <div className="h-16 flex items-center justify-between px-4 border-b border-sidebar-border/50 shrink-0">
+        <div className="h-16 flex items-center justify-between px-4 border-b border-sidebar-border/50 shrink-0 bg-sidebar/50 backdrop-blur-sm">
           <Link href="/dashboard" className="flex items-center gap-2 group" onClick={onClose}>
             <div className="bg-primary p-1.5 rounded-lg shadow-[0_0_15px_rgba(34,124,255,0.4)] transition-transform group-hover:scale-110">
               <Brain className="w-5 h-5 text-primary-foreground" strokeWidth={1.5} />
@@ -112,7 +115,7 @@ export function AppSidebar({ isOpen, onClose }: AppSidebarProps) {
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto py-4">
+        <div className="flex-1 overflow-y-auto py-4 scrollbar-hide">
           <div className="px-4 mb-6">
             <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/70 px-2 mb-2 block">{t.caseDiscussions}</span>
             <div className="space-y-1">
@@ -188,7 +191,7 @@ export function AppSidebar({ isOpen, onClose }: AppSidebarProps) {
                   href={item.url}
                   onClick={onClose}
                   className={cn(
-                    "flex items-center gap-2 px-3 py-2 rounded-md text-sm transition-all duration-200 group/btn relative",
+                    "flex items-center gap-2 px-3 py-2 rounded-md text-sm transition-all duration-200 group/btn relative overflow-hidden",
                     pathname === item.url 
                       ? cn("bg-gradient-to-r text-foreground font-bold shadow-md", item.color)
                       : "text-muted-foreground hover:bg-sidebar-accent hover:text-foreground"
@@ -202,7 +205,7 @@ export function AppSidebar({ isOpen, onClose }: AppSidebarProps) {
           </div>
         </div>
 
-        <div className="p-4 border-t border-sidebar-border/50 shrink-0">
+        <div className="p-4 border-t border-sidebar-border/50 shrink-0 bg-sidebar/50">
           <Link 
             href="/dashboard/settings" 
             onClick={onClose}
