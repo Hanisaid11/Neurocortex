@@ -15,6 +15,7 @@ export interface ChatMessage {
 export interface ChatSession {
   id: string;
   title: string;
+  type: 'case' | 'general';
   messages: ChatMessage[];
   lastUpdated: number;
 }
@@ -38,7 +39,17 @@ export const storage = {
   getChats: (): ChatSession[] => {
     if (typeof window === 'undefined') return [];
     const data = localStorage.getItem(STORAGE_KEYS.CHATS);
-    return data ? JSON.parse(data) : [];
+    if (!data) return [];
+    try {
+      const chats = JSON.parse(data);
+      // Ensure existing chats have a type
+      return chats.map((c: any) => ({
+        ...c,
+        type: c.type || 'case'
+      }));
+    } catch (e) {
+      return [];
+    }
   },
   saveChats: (chats: ChatSession[]) => {
     localStorage.setItem(STORAGE_KEYS.CHATS, JSON.stringify(chats));
