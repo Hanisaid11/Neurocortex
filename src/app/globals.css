@@ -24,14 +24,6 @@
     --input: 223 20% 15%;
     --ring: 223 100% 59%;
     --radius: 0.5rem;
-    --sidebar-background: 223 20% 4%;
-    --sidebar-foreground: 210 20% 90%;
-    --sidebar-primary: 223 100% 59%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 223 20% 12%;
-    --sidebar-accent-foreground: 191 100% 50%;
-    --sidebar-border: 223 20% 10%;
-    --sidebar-ring: 223 100% 59%;
   }
 
   .theme-light {
@@ -76,7 +68,7 @@
 }
 
 [dir="rtl"] {
-  font-family: 'Inter', 'Arial', sans-serif; /* Adjust for Arabic if needed */
+  font-family: 'Inter', 'Arial', sans-serif;
 }
 
 .font-headline {
@@ -96,4 +88,14 @@
 
 .pulse-animation {
   animation: pulse-azure 2s infinite;
+}
+
+@keyframes nav-pulse {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(0.92); opacity: 0.7; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.animate-nav-pulse {
+  animation: nav-pulse 2s infinite ease-in-out;
 }
