@@ -1,22 +1,30 @@
-import type {Metadata} from 'next';
-import './globals.css';
+'use client';
 
-export const metadata: Metadata = {
-  title: 'NeuroCortex Pro | Advanced Neurosurgery CDSS',
-  description: 'Production-grade Clinical Decision Support System and academic research hub for Neurosurgery and Neurology.',
-};
+import * as React from 'react';
+import './globals.css';
+import { storage } from '@/lib/storage';
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const [theme, setTheme] = React.useState('dark');
+  const [lang, setLang] = React.useState('en');
+
+  React.useEffect(() => {
+    const profile = storage.getProfile();
+    setTheme(profile.preferences.theme);
+    setLang(profile.preferences.language);
+  }, []);
+
   return (
-    <html lang="en" className="dark">
+    <html lang={lang} dir={lang === 'ar' ? 'rtl' : 'ltr'} className={`dark theme-${theme}`}>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@400;500;600;700&family=Source+Code+Pro:wght@400;500&display=swap" rel="stylesheet" />
+        <title>NeuroCortex Pro | Advanced Neurosurgery CDSS</title>
       </head>
       <body className="font-body antialiased selection:bg-accent selection:text-accent-foreground">
         {children}

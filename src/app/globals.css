@@ -33,6 +33,37 @@
     --sidebar-border: 223 20% 10%;
     --sidebar-ring: 223 100% 59%;
   }
+
+  .theme-light {
+    --background: 210 20% 98%;
+    --foreground: 223 20% 6%;
+    --card: 0 0% 100%;
+    --card-foreground: 223 20% 6%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 223 20% 6%;
+    --primary: 223 100% 50%;
+    --primary-foreground: 210 20% 98%;
+    --secondary: 210 20% 90%;
+    --secondary-foreground: 223 20% 6%;
+    --muted: 210 20% 90%;
+    --muted-foreground: 215 20% 40%;
+    --accent: 191 100% 40%;
+    --accent-foreground: 0 0% 100%;
+    --border: 223 10% 85%;
+    --input: 223 10% 85%;
+    --ring: 223 100% 50%;
+  }
+
+  .theme-cyber {
+    --background: 260 40% 4%;
+    --foreground: 180 100% 50%;
+    --card: 260 40% 6%;
+    --card-foreground: 180 100% 80%;
+    --primary: 280 100% 60%;
+    --accent: 180 100% 50%;
+    --border: 180 100% 20%;
+    --ring: 280 100% 60%;
+  }
 }
 
 @layer base {
@@ -40,12 +71,12 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground font-body;
-    background-image: 
-      radial-gradient(at 0% 0%, hsla(223, 100%, 59%, 0.05) 0px, transparent 50%),
-      radial-gradient(at 100% 100%, hsla(191, 100%, 50%, 0.05) 0px, transparent 50%);
-    background-attachment: fixed;
+    @apply bg-background text-foreground font-body transition-colors duration-300;
   }
+}
+
+[dir="rtl"] {
+  font-family: 'Inter', 'Arial', sans-serif; /* Adjust for Arabic if needed */
 }
 
 .font-headline {
