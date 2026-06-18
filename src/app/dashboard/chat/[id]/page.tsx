@@ -37,6 +37,7 @@ export default function ChatWorkspace() {
   const [lang, setLang] = React.useState<'en' | 'ar'>('en');
   const [activeRedFlag, setActiveRedFlag] = React.useState<{title: string, protocol: string[], flag: string} | null>(null);
   const scrollRef = React.useRef<HTMLDivElement>(null);
+  const audioRef = React.useRef<HTMLAudioElement | null>(null);
 
   React.useEffect(() => {
     const profile = storage.getProfile();
@@ -62,6 +63,7 @@ export default function ChatWorkspace() {
     if (!SpeechRecognition) return;
 
     const recognition = new SpeechRecognition();
+    // FORCE CORRECT LANGUAGE SUPPORT
     recognition.lang = lang === 'ar' ? 'ar-SA' : 'en-US';
     recognition.start();
     setIsListening(true);
@@ -70,7 +72,6 @@ export default function ChatWorkspace() {
       const transcript = event.results[0][0].transcript;
       setInput(prev => prev + ' ' + transcript);
       setIsListening(false);
-      // Real-time red flag check for voice input
       const flag = detectRedFlags(transcript);
       if (flag) {
         setActiveRedFlag({ title: flag.title, protocol: flag.protocol, flag: transcript });
@@ -80,11 +81,10 @@ export default function ChatWorkspace() {
     recognition.onerror = () => setIsListening(false);
   };
 
-  const handleSend = async (messageText?: string) => {
+  const handleSend = async (messageText?: string, fromAudioMode = false) => {
     const text = messageText || input;
     if (!text.trim() || !chat) return;
 
-    // Check for red flags before sending
     const flag = detectRedFlags(text);
     if (flag) {
       setActiveRedFlag({ title: flag.title, protocol: flag.protocol, flag: text });
@@ -111,8 +111,10 @@ export default function ChatWorkspace() {
         history: updatedMessages.map(m => ({ role: m.role, content: m.content })),
         userProfile: {
           specialty: profile.specialty,
-          longTermMemory: profile.longTermMemory
-        }
+          longTermMemory: profile.longTermMemory,
+          language: profile.preferences.language
+        },
+        generateAudio: fromAudioMode || showAudioMode
       });
 
       const aiMsg: ChatMessage = {
@@ -129,6 +131,16 @@ export default function ChatWorkspace() {
       };
 
       setChat(finalChat);
+      
+      // Play back audio if received
+      if (response.audioResponse) {
+        if (!audioRef.current) {
+          audioRef.current = new Audio(response.audioResponse);
+        } else {
+          audioRef.current.src = response.audioResponse;
+        }
+        audioRef.current.play().catch(e => console.warn('Audio playback blocked', e));
+      }
       
       if (response.memoryUpdate) {
         profile.longTermMemory = [...new Set([...profile.longTermMemory, response.memoryUpdate])];
@@ -326,7 +338,7 @@ STABILIZATION PROTOCOLS (IF APPLICABLE):
       {showAudioMode && (
         <LiveAudioSession 
           onClose={() => setShowAudioMode(false)} 
-          onSpeechResult={(text) => handleSend(text)}
+          onSpeechResult={(text) => handleSend(text, true)}
           lang={lang}
         />
       )}
