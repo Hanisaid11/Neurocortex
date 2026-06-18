@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts'
 import { Activity, Award, TrendingUp, Info } from "lucide-react"
 
+import { Badge } from "@/components/ui/badge";
 const outcomeData = [
   { name: 'Glioma', rate: 92, patients: 45 },
   { name: 'Aneurysm', rate: 98, patients: 120 },
