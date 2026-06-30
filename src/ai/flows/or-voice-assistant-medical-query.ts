@@ -62,7 +62,6 @@ async function toWav(
 const medicalQuestionPrompt = ai.definePrompt({
   name: 'medicalQuestionPrompt',
   input: { schema: MedicalQuestionInputSchema },
-  output: { schema: z.string().describe('Concise medical answer.') }, // Output is just text for this prompt
   prompt: `You are a highly knowledgeable medical assistant specializing in neurosurgery and neurology.\nA neurosurgeon in an operating room is asking a question and needs a concise, accurate, and audible answer.\nProvide a direct and brief answer to the following medical question. Do not include conversational filler or extensive explanations.\nKeep the answer under 50 words.\n\nQuestion: {{{input}}}`,
 });
 
@@ -74,7 +73,8 @@ const orVoiceAssistantMedicalQueryFlow = ai.defineFlow(
   },
   async (question) => {
     // Step 1: Get the concise text response from the LLM
-    const { output: textResponse } = await medicalQuestionPrompt(question);
+    const promptResult = await medicalQuestionPrompt(question);
+    const textResponse = promptResult.text?.trim();
 
     if (!textResponse) {
       throw new Error('Failed to get a text response for the medical question.');
@@ -101,6 +101,22 @@ const orVoiceAssistantMedicalQueryFlow = ai.defineFlow(
     // Extract base64 audio data and convert to WAV
     const audioBuffer = Buffer.from(
       media.url.substring(media.url.indexOf(',') + 1),
+      'base64'
+    );
+    const wavBase64 = await toWav(audioBuffer);
+
+    return {
+      textResponse: textResponse,
+      audioResponse: 'data:audio/wav;base64,' + wavBase64,
+    };
+  }
+);
+
+export async function orVoiceAssistantMedicalQuery(
+  input: MedicalQuestionInput
+): Promise<MedicalQuestionOutput> {
+  return orVoiceAssistantMedicalQueryFlow(input);
+}
       'base64'
     );
     const wavBase64 = await toWav(audioBuffer);
