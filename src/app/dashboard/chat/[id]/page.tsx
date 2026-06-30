@@ -138,8 +138,15 @@ export default function ChatWorkspace() {
       const allChats = storage.getChats().map(c => c.id === chat.id ? finalChat : c);
       storage.saveChats(allChats);
 
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
+      const errorMsg: ChatMessage = {
+        id: (Date.now() + 2).toString(),
+        role: 'assistant',
+        content: `⚠️ Error: ${err?.message || 'Failed to get AI response. Please check the API configuration.'}`,
+        timestamp: Date.now()
+      };
+      setChat(prev => prev ? { ...prev, messages: [...prev.messages, errorMsg] } : prev);
     } finally {
       setLoading(false);
     }
