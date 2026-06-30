@@ -22,6 +22,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { storage, type ChatSession, type ChatMessage } from '@/lib/storage';
 import { unifiedMedicalChat } from '@/ai/flows/unified-medical-chat-flow';
+import { orVoiceAssistantMedicalQuery } from '@/ai/flows/or-voice-assistant-medical-query';
 import { translations } from '@/lib/translations';
 import { LiveAudioSession } from '@/components/chat/live-audio-session';
 import { detectRedFlags } from '@/lib/red-flag-detector';
@@ -37,6 +38,7 @@ export default function ChatWorkspace() {
   const [lang, setLang] = React.useState<'en' | 'ar'>('en');
   const [activeRedFlag, setActiveRedFlag] = React.useState<{title: string, protocol: string[], flag: string} | null>(null);
   const scrollRef = React.useRef<HTMLDivElement>(null);
+  const audioRef = React.useRef<HTMLAudioElement | null>(null);
 
   React.useEffect(() => {
     const profile = storage.getProfile();
@@ -80,7 +82,7 @@ export default function ChatWorkspace() {
     recognition.onerror = () => setIsListening(false);
   };
 
-  const handleSend = async (messageText?: string) => {
+  const handleSend = async (messageText?: string, speak?: boolean) => {
     const text = messageText || input;
     if (!text.trim() || !chat) return;
 
@@ -129,6 +131,22 @@ export default function ChatWorkspace() {
       };
 
       setChat(finalChat);
+
+      if (speak) {
+        try {
+          const voiceResp = await orVoiceAssistantMedicalQuery(response.response);
+          if (voiceResp.audioResponse) {
+            if (!audioRef.current) {
+              audioRef.current = new Audio(voiceResp.audioResponse);
+            } else {
+              audioRef.current.src = voiceResp.audioResponse;
+            }
+            audioRef.current.play();
+          }
+        } catch (ttsErr) {
+          console.error('TTS error:', ttsErr);
+        }
+      }
       
       if (response.memoryUpdate) {
         profile.longTermMemory = [...new Set([...profile.longTermMemory, response.memoryUpdate])];
@@ -340,7 +358,7 @@ STABILIZATION PROTOCOLS (IF APPLICABLE):
       {showAudioMode && (
         <LiveAudioSession 
           onClose={() => setShowAudioMode(false)} 
-          onSpeechResult={(text) => handleSend(text)}
+          onSpeechResult={(text) => handleSend(text, true)}
           lang={lang}
         />
       )}
