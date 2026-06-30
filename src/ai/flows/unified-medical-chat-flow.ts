@@ -68,8 +68,7 @@ QUERY:
 {{#if parts}}
 MEDIA ATTACHMENTS:
 {{#each parts}}
-- Type: {{{type}}}
-{{#if (eq type "text")}}Content: {{{content}}}{{else}}Media Part Provided{{/if}}
+- Type: {{{type}}}, Content: {{{content}}}
 {{/each}}
 {{/if}}
 
