@@ -35,6 +35,7 @@ export function LiveAudioSession({ onClose, onSpeechResult, lang }: LiveAudioSes
         const text = event.results[0][0].transcript;
         onSpeechResult(text);
         setIsListening(false);
+        onClose();
       };
       recognition.onerror = () => setIsListening(false);
       recognition.start();
